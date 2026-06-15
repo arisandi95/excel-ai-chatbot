@@ -57,4 +57,13 @@ return [
         'max_tokens' => env('OLLAMA_MAX_TOKENS', 2048),
         'use_http' => env('OLLAMA_USE_HTTP', true),
     ],
+
+    'ollama_cloud' => [
+        'enabled' => env('USE_OLLAMA_CLOUD', false),
+        'api_url' => env('OLLAMA_CLOUD_API_URL', 'https://api.ollama.com'),
+        'api_key' => env('OLLAMA_CLOUD_API_KEY', ''),
+        'model' => env('OLLAMA_CLOUD_MODEL', 'minimax-m3:cloud'),
+        'temperature' => env('OLLAMA_CLOUD_TEMPERATURE', 0.0),
+        'max_tokens' => env('OLLAMA_CLOUD_MAX_TOKENS', 4096),
+    ],
 ];

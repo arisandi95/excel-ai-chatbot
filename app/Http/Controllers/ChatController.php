@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\N8nService;
 use App\Services\ExcelFileService;
 use App\Services\OllamaService;
+use App\Services\OllamaCloudService;
 use App\Services\RagService;
 
 /**
@@ -21,13 +22,15 @@ class ChatController extends Controller
     protected N8nService $n8nService;
     protected ExcelFileService $excelFileService;
     protected OllamaService $ollamaService;
+    protected OllamaCloudService $ollamaCloudService;
     protected RagService $ragService;
 
-    public function __construct(N8nService $n8nService, ExcelFileService $excelFileService, OllamaService $ollamaService, RagService $ragService)
+    public function __construct(N8nService $n8nService, ExcelFileService $excelFileService, OllamaService $ollamaService, OllamaCloudService $ollamaCloudService, RagService $ragService)
     {
         $this->n8nService = $n8nService;
         $this->excelFileService = $excelFileService;
         $this->ollamaService = $ollamaService;
+        $this->ollamaCloudService = $ollamaCloudService;
         $this->ragService = $ragService;
     }
 
@@ -136,7 +139,10 @@ class ChatController extends Controller
             $fileChunks = $fullContext;
         }
 
-        if ($this->ollamaService->isEnabled()) {
+        // Priority: Ollama Cloud > Ollama Local > n8n
+        if ($this->ollamaCloudService->isEnabled()) {
+            $response = $this->ollamaCloudService->ask($question, $fileChunks);
+        } elseif ($this->ollamaService->isEnabled()) {
             $response = $this->ollamaService->ask($question, $fileChunks);
         } else {
             $response = $this->n8nService->sendQuestion($question, $uploadPath, $files, $fileChunks, $fileContents, $selectedFile);
