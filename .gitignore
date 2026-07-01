@@ -39,3 +39,4 @@ Homestead.yaml
 /.env.backup
 /.env.production
 /uploads
+/.ai

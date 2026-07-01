@@ -122,7 +122,13 @@ class ChatController extends Controller
         }
 
         $fileContents = $this->excelFileService->loadExcelContents($files, $selectedFile);
-        $fileChunks = $this->ragService->getRelevantChunks($question, $files, $selectedFile);
+
+        $ragMethod = config('services.rag.method', env('RAG_METHOD', 'RAG_KEYWORD'));
+        if ($ragMethod === 'RAG_PAGEINDEX') {
+            $fileChunks = $this->ragService->getRelevantChunksPageIndex($question, $files, $selectedFile);
+        } else {
+            $fileChunks = $this->ragService->getRelevantChunks($question, $files, $selectedFile);
+        }
 
         // Jika chunk yang relevan tidak ditemukan, coba kirim full konten file agar AI tetap punya konteks
         if (empty($fileChunks) && !empty($fileContents)) {

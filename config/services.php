@@ -66,4 +66,16 @@ return [
         'temperature' => env('OLLAMA_CLOUD_TEMPERATURE', 0.0),
         'max_tokens' => env('OLLAMA_CLOUD_MAX_TOKENS', 4096),
     ],
+
+    'rag' => [
+        'method' => env('RAG_METHOD', 'RAG_KEYWORD'),
+        'pageindex' => [
+            'cache_enabled' => env('PAGEINDEX_CACHE_ENABLED', true),
+            'cache_ttl' => env('PAGEINDEX_CACHE_TTL', 3600),
+            'max_children_per_node' => env('PAGEINDEX_MAX_CHILDREN_PER_NODE', 50),
+            'child_preview_limit' => env('PAGEINDEX_CHILD_PREVIEW_LIMIT', 20),
+            'enable_category_detection' => env('PAGEINDEX_ENABLE_CATEGORY_DETECTION', true),
+            'enable_numeric_summary' => env('PAGEINDEX_ENABLE_NUMERIC_SUMMARY', true),
+        ],
+    ],
 ];

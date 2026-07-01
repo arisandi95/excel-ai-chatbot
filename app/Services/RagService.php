@@ -15,13 +15,15 @@ use Illuminate\Support\Facades\Log;
 class RagService
 {
     protected ExcelFileService $excelFileService;
+    protected PageIndexService $pageIndexService;
     protected int $chunkSizeRows = 15;
     protected int $chunkMaxLength = 2000;
     protected int $maxRelevantChunks = 5;
 
-    public function __construct(ExcelFileService $excelFileService)
+    public function __construct(ExcelFileService $excelFileService, PageIndexService $pageIndexService)
     {
         $this->excelFileService = $excelFileService;
+        $this->pageIndexService = $pageIndexService;
     }
 
     /**
@@ -66,6 +68,41 @@ class RagService
         }
 
         return array_column($topScored, 'chunk');
+    }
+
+    /**
+     * Dapatkan chunk Excel yang paling relevan menggunakan PageIndex-style tree retrieval.
+     *
+     * @param string $question
+     * @param array $files
+     * @param string|null $selectedFile
+     * @return array
+     */
+    public function getRelevantChunksPageIndex(string $question, array $files, ?string $selectedFile = null): array
+    {
+        $chunks = [];
+
+        foreach ($files as $file) {
+            if ($selectedFile !== null && $file !== $selectedFile) {
+                continue;
+            }
+
+            if (!$this->excelFileService->fileExists($file)) {
+                continue;
+            }
+
+            try {
+                $tree = $this->pageIndexService->buildTree($file);
+                $chunks = array_merge($chunks, $this->pageIndexService->reasoningRetrieval($question, $tree));
+            } catch (\Throwable $e) {
+                Log::error('Gagal memproses PageIndex untuk file Excel', [
+                    'file' => $file,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return array_slice($chunks, 0, $this->maxRelevantChunks);
     }
 
     /**

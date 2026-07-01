@@ -76,6 +76,24 @@ Aplikasi ini membaca pengaturan dari `config/services.php`:
 Jika `USE_LOCAL_OLLAMA=true`, aplikasi akan mencoba menggunakan Ollama local.
 Jika tidak, aplikasi akan mengirim pertanyaan ke webhook n8n.
 
+- `rag.method` -> metode RAG yang dipakai oleh aplikasi. Nilai yang didukung:
+   - `RAG_KEYWORD` (default) — metode keyword-based RAG yang sudah ada.
+   - `RAG_PAGEINDEX` — PageIndex-style tree retrieval (hybrid filter + reasoning).
+
+Konfigurasi environment terkait RAG (tambahkan di `.env`):
+
+```env
+# Pilih metode RAG: RAG_KEYWORD atau RAG_PAGEINDEX
+RAG_METHOD=RAG_KEYWORD
+
+# PageIndex (jika RAG_METHOD=RAG_PAGEINDEX)
+PAGEINDEX_CACHE_ENABLED=true
+PAGEINDEX_CACHE_TTL=3600
+PAGEINDEX_MAX_CHILDREN_PER_NODE=50
+PAGEINDEX_ENABLE_CATEGORY_DETECTION=true
+PAGEINDEX_ENABLE_NUMERIC_SUMMARY=true
+```
+
 ## Cara Pakai
 
 1. Buka `http://127.0.0.1:8000/admin`
